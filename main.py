@@ -93,7 +93,7 @@ def main():
      print(i,",",hiddrenLayerList,",",batchSize,",",learningRate,",", nTest,",",correctRate)
 
   session.close()
-  print("I love this game")
+  print("==========End of Tensorflow Neural Network=============")
 
 if __name__ == "__main__":
    main()
