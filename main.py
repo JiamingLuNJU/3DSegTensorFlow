@@ -59,6 +59,9 @@ def main():
   testData = data[nTrain:totalExamples]
   testLabel = label[nTrain:totalExamples]
 
+  # add time computation
+
+
   #Consturct Deep Learning network model
   x = tf.placeholder(tf.float32,[None,InputWidth])
   yGroundTruth = tf.placeholder(tf.int16,[None,LabelWidth])
@@ -79,7 +82,6 @@ def main():
   session = tf.Session()
   session.run(tf.global_variables_initializer())
   batchSize = 100
-
   print("Epoch, HiddenLayersWidth, BatchSize, LearningRate, NumTestExamples, CorrectRate")
   for i in range(epoches):
      for j in range(0, nTrain, batchSize):
