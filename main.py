@@ -32,11 +32,11 @@ def main():
   learningRate = float(sys.argv[4])
   totalExamples = sum(1 for line in fileData)
   fileData.seek(fileBegin)
-  numTrainExamples = 0;
+  numTrainTestExamples = 0;
   if 5 == argc:
-      numTrainExamples = int(totalExamples* 0.8)
+      numTrainTestExamples = int(totalExamples* 0.8)
   else:
-      numTrainExamples = int(sys.argv[5])
+      numTrainTestExamples = int(sys.argv[5])
 
   # read csv file
   data  = np.ndarray(shape=(totalExamples,2), dtype=int)
@@ -49,7 +49,18 @@ def main():
     data[row] = rowList[0:rowWidth-1]
     label[row] = rowList[rowWidth-1]
     row += 1
+    if row > 1000: break # for test
   fileData.close()
+
+  #split train and test data and label
+  nTrain = int(totalExamples*0.8)
+  nTest = totalExamples- nTrain
+  trainData = data[0:nTrain]
+  trainLabel = label[0:nTrain]
+  testData = data[nTrain:totalExamples]
+  testLabel = label[nTrain:totalExamples]
+
+  
 
   print("I love this game")
 
