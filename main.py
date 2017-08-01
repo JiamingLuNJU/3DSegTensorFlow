@@ -27,7 +27,7 @@ def main():
   filename = sys.argv[1]
   fileData = open(filename)
   epoches = int(sys.argv[2])
-  hiddrenLayerList = np.asarray(sys.argv[3].split(','))
+  hiddrenLayerList = [int(elem) for elem in sys.argv[3].split(',')]
   learningRate = float(sys.argv[4])
   totalExamples = sum(1 for line in fileData)
   fileData.seek(0)
@@ -38,7 +38,7 @@ def main():
       numTrainTestExamples = int(sys.argv[5])
 
   # read csv file
-  totalExamples = 1000 ##################################### for test
+  #totalExamples = 10000 ##################################### for test
   data  = np.ndarray(shape=(totalExamples,InputWidth), dtype=int)
   label = np.zeros(shape=(totalExamples,LabelWidth), dtype=int)
   row = 0
@@ -48,7 +48,7 @@ def main():
     data[row] = rowList[0:InputWidth]
     label[row][int(rowList[InputWidth])] = 1
     row += 1
-    if row >= 1000: break ##################################### for test
+    #if row >= totalExamples: break ##################################### for test
   fileData.close()
 
   #split train and test data and label
