@@ -15,6 +15,8 @@ InputWidth = 2
 LabelWidth = 26  # Groundtruth label is from 0 to 25
 batchSize = 100
 
+visualGraph = True
+
 def usage():
   usageInfo = "Usage:\n"\
          + "python3 main.py T1T2LabelFilename Epoches HiddenLayerStructure LearningRate\n"\
@@ -79,13 +81,25 @@ def main():
   x = tf.placeholder(tf.float32,[None,InputWidth])
   yGroundTruth = tf.placeholder(tf.int16,[None,LabelWidth])
   preWidth = InputWidth
-  preX = x
-  for width in hiddenLayerList:
-    W = tf.Variable(tf.zeros([preWidth,width]))
-    b = tf.Variable(tf.zeros([width]))
-    preX = tf.nn.relu(tf.matmul(preX, W) + b)
-    preWidth = width
-  cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=yGroundTruth,logits=preX))
+  #preX = x
+  # for width in hiddenLayerList:
+  #   W = tf.Variable(tf.zeros([preWidth,width]))
+  #   b = tf.Variable(tf.zeros([width]))
+  #   preX = tf.nn.relu(tf.matmul(preX, W) + b)
+  #   preWidth = width
+  #   #if visualGraph:
+  WList =[]
+  bList = []
+  layerResultlList = [x]
+  sizeHiddenLayers = len(hiddenLayerList)
+  for i in range(sizeHiddenLayers):
+      width = hiddenLayerList[i]
+      WList.append( tf.Variable(tf.zeros([preWidth,width])) )
+      bList.append( tf.Variable(tf.zeros([width])) )
+      layerResultlList.append( tf.nn.relu(tf.matmul(layerResultlList[i], WList[i]) + bList[i]) )
+      preWidth = width
+
+  cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=yGroundTruth,logits=layerResultlList[-1]))
 
   # train
   session = tf.Session()
@@ -94,11 +108,8 @@ def main():
   print("Epoch, HiddenLayersWidth, BatchSize, LearningRate, NumTestExamples, CorrectRate")
   for i in range(epoches):
      train_step = tf.train.GradientDescentOptimizer(learning_rate=learningRate).minimize(cross_entropy)
-     if (0 != i and 0 == i % 3):
+     if (0 != i and 0 == i % 3 and learningRate > 1.0e-8):
        learningRate = learningRate * 0.6
-       if (learningRate < 1.0e-8):
-         print ("****Updating learningRate is less than 1e-8, so exit train and test.*****")
-         break
 
      for j in range(0, nTrain, batchSize):
         batchX = trainData[j:j+batchSize]
@@ -106,7 +117,7 @@ def main():
         session.run(train_step, feed_dict={x:batchX, yGroundTruth:batchY})
 
      # test in every epoch
-     correct_prediction = tf.equal(tf.argmax(preX, 1), tf.argmax(yGroundTruth, 1))
+     correct_prediction = tf.equal(tf.argmax(layerResultlList[-1], 1), tf.argmax(yGroundTruth, 1))
      accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
      correctRate = session.run(accuracy, feed_dict={x:testData, yGroundTruth:testLabel})
      print(i,",",hiddenLayerList,",",batchSize,",",learningRate,",", nTest,",",correctRate)
