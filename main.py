@@ -1,3 +1,11 @@
+'''
+Performance Comparison between Intel DAAL and Tensorflow neural network
+
+Software packages: Intel DAAL and Tensorflow 1.3;
+
+Author: Hui Xie August 2017
+
+'''
 import tensorflow as tf
 import sys
 import numpy as np
@@ -39,7 +47,7 @@ def main():
       numTrainTestExamples = int(sys.argv[5])
 
   # read csv file
-  print("Infor: reading the T1T2 and Label csv file ......") 
+  print("Infor: reading the T1T2 and Label csv file ......")
   data  = np.ndarray(shape=(totalExamples,InputWidth), dtype=int)
   label = np.zeros(shape=(totalExamples,LabelWidth), dtype=int)
   row = 0
