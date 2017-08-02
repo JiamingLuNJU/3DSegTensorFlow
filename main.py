@@ -1,6 +1,7 @@
 import tensorflow as tf
 import sys
 import numpy as np
+import time
 
 InputWidth = 2
 LabelWidth = 26
@@ -60,7 +61,8 @@ def main():
   testLabel = label[nTrain:totalExamples]
 
   # add time computation
-
+  print("Start Tensorflow Neural Network at :", time.strftime("%Y-%m-%d %H:%M:%S %Z", time.localtime(time.time())))
+  startTime = time.perf_counter()
 
   #Consturct Deep Learning network model
   x = tf.placeholder(tf.float32,[None,InputWidth])
@@ -74,20 +76,24 @@ def main():
     preWidth = width
   cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=yGroundTruth,logits=preX))
 
-  # train and test preparation
-  train_step = tf.train.GradientDescentOptimizer(learning_rate=learningRate).minimize(cross_entropy)
-
-
   # train
   session = tf.Session()
   session.run(tf.global_variables_initializer())
   batchSize = 100
   print("Epoch, HiddenLayersWidth, BatchSize, LearningRate, NumTestExamples, CorrectRate")
   for i in range(epoches):
+     train_step = tf.train.GradientDescentOptimizer(learning_rate=learningRate).minimize(cross_entropy)
+     if (0 != i and 0 == i % 3):
+       learningRate = learningRate * 0.6
+       if (learningRate < 1.0e-8):
+         print ("****Updating learningRate is less than 1e-8, so exit train and test.*****")
+         break
+
      for j in range(0, nTrain, batchSize):
         batchX = trainData[j:j+batchSize]
         batchY = trainLabel[j:j+batchSize]
         session.run(train_step, feed_dict={x:batchX, yGroundTruth:batchY})
+
      # test in every epoch
      correct_prediction = tf.equal(tf.argmax(preX, 1), tf.argmax(yGroundTruth, 1))
      accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
@@ -95,6 +101,9 @@ def main():
      print(i,",",hiddrenLayerList,",",batchSize,",",learningRate,",", nTest,",",correctRate)
 
   session.close()
+  diffTime = time.perf_counter()-startTime
+  print("End Tensorflow Neural Network at :", time.strftime("%Y-%m-%d %H:%M:%S %Z", time.localtime(time.time())))
+  print("Compuation time for Tensorflow Neural Network: ", diffTime, "seconds.")
   print("==========End of Tensorflow Neural Network=============")
 
 if __name__ == "__main__":
