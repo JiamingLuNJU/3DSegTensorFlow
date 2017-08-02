@@ -12,39 +12,43 @@ import numpy as np
 import time
 
 InputWidth = 2
-LabelWidth = 26
+LabelWidth = 26  # Groundtruth label is from 0 to 25
+batchSize = 100
 
 def usage():
   usageInfo = "Usage:\n"\
-         + "command T1T2LabelFilename Epoches HiddenLayerStructure LearningRate [NumberofTrainExample]\n"\
+         + "python3 main.py T1T2LabelFilename Epoches HiddenLayerStructure LearningRate\n"\
          + "Notes:\n"\
-         + "1 T1T2LabelFilename is the input csv file with a row representing an example and the last column is a label;\n"\
+         + "1  T1T2LabelFilename is the input csv file with a row representing an example and the last column is a label, which is converted form original nii files;\n"\
          + "2. Epoches is an integer larger than zero;\n"\
          + "3. HiddenLayerStructure is number string separated by comma without a space. e.g. 80,60,50,50,26\n"\
-         + "4. The width of last layer should be the maximum label value plus 1 for classification;\n"\
+         + "4. The width of last layer should be the maximum label value plus 1 for classification goal;\n"\
          + "5. LearningRate is an initial learningRate, a float number larger than 1e-4;\n"\
-         + "6. NumberofTrainExample is an optional parameter to specify the number of train Example limited to less than 2 million; Without it, program will train all examples.\n"\
-         + "7. Example: ./main.py T1T2Label.csv 20  80,60,40,26 0.002 100000\n"
+         + "6. Example: python3 ./main.py T1T2Label.csv 20  80,60,40,26 0.002\n"
   print(usageInfo)
 
 def main():
+  # parse input parameters
   argc = len(sys.argv)
-  if 5 != argc and 6 != argc:
+  if 5 != argc:
      print("Error: the number of input parameters is incorrect. Quit.")
      usage()
-     return;
+     return
+
   filename = sys.argv[1]
-  fileData = open(filename)
+  try:
+    fileData = open(filename)
+  except:
+    print("Error: can not open file", filename, ". Program exits.")
+    usage()
+    return
+
   epoches = int(sys.argv[2])
-  hiddrenLayerList = [int(elem) for elem in sys.argv[3].split(',')]
+  hiddenLayerList = [int(elem) for elem in sys.argv[3].split(',')]
   learningRate = float(sys.argv[4])
+  fileData.seek(0)
   totalExamples = sum(1 for line in fileData)
   fileData.seek(0)
-  numTrainTestExamples = 0;
-  if 5 == argc:
-      numTrainTestExamples = int(totalExamples* 0.8)
-  else:
-      numTrainTestExamples = int(sys.argv[5])
 
   # read csv file
   print("Infor: reading the T1T2 and Label csv file ......")
@@ -67,16 +71,16 @@ def main():
   testData = data[nTrain:totalExamples]
   testLabel = label[nTrain:totalExamples]
 
-  # add time computation
-  print("Start Tensorflow Neural Network at :", time.strftime("%Y-%m-%d %H:%M:%S %Z", time.localtime(time.time())))
+  # start time computation
+  print("Start Tensorflow Neural Network at:", time.strftime("%Y-%m-%d %H:%M:%S %Z", time.localtime(time.time())))
   startTime = time.perf_counter()
 
-  #Consturct Deep Learning network model
+  # Consturct a Deep Learning network model
   x = tf.placeholder(tf.float32,[None,InputWidth])
   yGroundTruth = tf.placeholder(tf.int16,[None,LabelWidth])
   preWidth = InputWidth
   preX = x
-  for width in hiddrenLayerList:
+  for width in hiddenLayerList:
     W = tf.Variable(tf.zeros([preWidth,width]))
     b = tf.Variable(tf.zeros([width]))
     preX = tf.nn.relu(tf.matmul(preX, W) + b)
@@ -86,7 +90,7 @@ def main():
   # train
   session = tf.Session()
   session.run(tf.global_variables_initializer())
-  batchSize = 100
+  print("===============================================================================")
   print("Epoch, HiddenLayersWidth, BatchSize, LearningRate, NumTestExamples, CorrectRate")
   for i in range(epoches):
      train_step = tf.train.GradientDescentOptimizer(learning_rate=learningRate).minimize(cross_entropy)
@@ -105,12 +109,12 @@ def main():
      correct_prediction = tf.equal(tf.argmax(preX, 1), tf.argmax(yGroundTruth, 1))
      accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
      correctRate = session.run(accuracy, feed_dict={x:testData, yGroundTruth:testLabel})
-     print(i,",",hiddrenLayerList,",",batchSize,",",learningRate,",", nTest,",",correctRate)
+     print(i,",",hiddenLayerList,",",batchSize,",",learningRate,",", nTest,",",correctRate)
 
   session.close()
   diffTime = time.perf_counter()-startTime
-  print("End Tensorflow Neural Network at :", time.strftime("%Y-%m-%d %H:%M:%S %Z", time.localtime(time.time())))
-  print("Compuation time for Tensorflow Neural Network: ", diffTime, "seconds.")
+  print("End Tensorflow Neural Network at:", time.strftime("%Y-%m-%d %H:%M:%S %Z", time.localtime(time.time())))
+  print("Computation time for Tensorflow Neural Network: ", diffTime, "seconds.")
   print("==========End of Tensorflow Neural Network=============")
 
 if __name__ == "__main__":
