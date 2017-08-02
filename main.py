@@ -39,7 +39,7 @@ def main():
       numTrainTestExamples = int(sys.argv[5])
 
   # read csv file
-  #totalExamples = 10000 ##################################### for test
+  print("Infor: reading the T1T2 and Label csv file ......") 
   data  = np.ndarray(shape=(totalExamples,InputWidth), dtype=int)
   label = np.zeros(shape=(totalExamples,LabelWidth), dtype=int)
   row = 0
@@ -49,7 +49,6 @@ def main():
     data[row] = rowList[0:InputWidth]
     label[row][int(rowList[InputWidth])] = 1
     row += 1
-    #if row >= totalExamples: break ##################################### for test
   fileData.close()
 
   #split train and test data and label
