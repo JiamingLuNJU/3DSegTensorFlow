@@ -118,8 +118,9 @@ def main():
 
      # test in every epoch
      correct_prediction = tf.equal(tf.argmax(layerResultlList[-1], 1), tf.argmax(yGroundTruth, 1))
-     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32), 0)
      correctRate = session.run(accuracy, feed_dict={x:testData, yGroundTruth:testLabel})
+     #correctRate = accuracy.eval(feed_dict={x: testData, yGroundTruth: testLabel}, session=session)
      print(i,",",hiddenLayerList,",",batchSize,",",learningRate,",", nTest,",",correctRate)
 
   session.close()
