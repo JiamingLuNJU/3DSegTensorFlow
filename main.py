@@ -76,7 +76,7 @@ def main():
   #debug
   nRow = testLabel.shape[0]
   rate = testLabel[:,0].sum()
-  print("testLabel 1 rate at first column: 0.537711 is =====", rate*1.0/nRow)
+  print("testLabel 1 rate at first column IS 0.537711.=====", rate*1.0/nRow)
   print("!!!!!This is the problem!!!!!")
 
 
