@@ -15,8 +15,6 @@ InputWidth = 2
 LabelWidth = 26  # Groundtruth label is from 0 to 25
 batchSize = 100
 
-#visualGraph = True
-
 def usage():
   usageInfo = "Usage:\n"\
          + "python3 main.py T1T2LabelFilename Epoches HiddenLayerStructure LearningRate\n"\
@@ -64,8 +62,6 @@ def main():
     label[row][int(rowList[InputWidth])] = 1  # label is one-hot row vector
     row += 1
   fileData.close()
-
-  #totalExamples = 400; ##########################################Debug
 
   #split train and test data and label
   nTrain = int(totalExamples*0.8)
