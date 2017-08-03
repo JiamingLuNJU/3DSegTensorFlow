@@ -104,6 +104,8 @@ def main():
   # train
   session = tf.Session()
   session.run(tf.global_variables_initializer())
+  hiddenLayerListStr = "["+ "-".join(str(e) for e in hiddenLayerList)+"]"
+  print("Total train examples: ", nTrain)
   print("===============================================================================")
   print("Epoch, HiddenLayersWidth, BatchSize, LearningRate, NumTestExamples, CorrectRate")
   for i in range(epoches):
@@ -121,7 +123,7 @@ def main():
      accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32), 0)
      correctRate = session.run(accuracy, feed_dict={x:testData, yGroundTruth:testLabel})
      #correctRate = accuracy.eval(feed_dict={x: testData, yGroundTruth: testLabel}, session=session)
-     print(i,",",hiddenLayerList,",",batchSize,",",learningRate,",", nTest,",",correctRate)
+     print(i,",",hiddenLayerListStr,",",batchSize,",",learningRate,",", nTest,",",correctRate)
 
   session.close()
   diffTime = time.perf_counter()-startTime
