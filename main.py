@@ -65,6 +65,8 @@ def main():
     row += 1
   fileData.close()
 
+  #totalExamples = 400; ##########################################Debug
+
   #split train and test data and label
   nTrain = int(totalExamples*0.8)
   nTest = totalExamples- nTrain
@@ -73,64 +75,48 @@ def main():
   testData = data[nTrain:totalExamples]
   testLabel = label[nTrain:totalExamples]
 
-  #debug
-  nRow = testLabel.shape[0]
-  rate = testLabel[:,0].sum()
-  print("testLabel 1 rate at first column IS 0.537711.=====", rate*1.0/nRow)
-  print("!!!!!This is the problem!!!!!")
-
-
-
   # start time computation
   print("Start Tensorflow Neural Network at:", time.strftime("%Y-%m-%d %H:%M:%S %Z", time.localtime(time.time())))
   startTime = time.perf_counter()
 
   # Consturct a Deep Learning network model
   x = tf.placeholder(tf.float32,[None,InputWidth])
-  yGroundTruth = tf.placeholder(tf.float32,[None,LabelWidth])
+  y_ = tf.placeholder(tf.float32,[None,LabelWidth])  # groundtruth
   preWidth = InputWidth
   preOut = x
+  nLayer = 0
   for width in hiddenLayerList:
-    W = tf.Variable(tf.zeros([preWidth,width]))
-    b = tf.Variable(tf.zeros([width]))
+    #W = tf.Variable(tf.random_normal([preWidth,width],stddev=0.35)) # which results a lot of zeros in output
+    W_name = "W"+str(nLayer)
+    nLayer +=1
+    W = tf.get_variable(W_name, shape=[preWidth,width], initializer=tf.contrib.layers.xavier_initializer())
+    b = tf.Variable(tf.random_uniform([width],minval=0,maxval=0.5))
     preOut = tf.nn.relu(tf.matmul(preOut, W) + b)
     preWidth = width
 
-  #####Use another method to construct network
-  # WList =[]
-  # bList = []
-  # layerResultlList = [x]
-  # sizeHiddenLayers = len(hiddenLayerList)
-  # for i in range(sizeHiddenLayers):
-  #     width = hiddenLayerList[i]
-  #     WList.append( tf.Variable(tf.zeros([preWidth,width])) )
-  #     bList.append( tf.Variable(tf.zeros([width])) )
-  #     layerResultlList.append( tf.nn.relu(tf.matmul(layerResultlList[i], WList[i]) + bList[i]) )
-  #     preWidth = width
-
-  cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=yGroundTruth,logits=preOut))
+  cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_,logits=preOut))
 
   # train and test
   mySession = tf.Session()
   mySession.run(tf.global_variables_initializer())
   hiddenLayerListStr = "["+ "-".join(str(e) for e in hiddenLayerList)+"]"
-  print("Total train examples: ", nTrain)
+  print("Number of train examples: ", nTrain)
+  print("Number of test examples: ", nTest)
   print("===============================================================================")
   print("Epoch, HiddenLayersWidth, BatchSize, LearningRate, NumTestExamples, CorrectRate")
   for i in range(epoches):
      train_step = tf.train.GradientDescentOptimizer(learning_rate=learningRate).minimize(cross_entropy)
      if (0 != i and 0 == i % 3 and learningRate > 1.0e-8):
-       learningRate = learningRate * 0.7
+       learningRate = learningRate * 0.6
 
      for j in range(0, nTrain, batchSize):
         batchX = trainData[j:j+batchSize]
         batchY = trainLabel[j:j+batchSize]
-        mySession.run(train_step, feed_dict={x:batchX, yGroundTruth:batchY})
+        mySession.run(train_step, feed_dict={x:batchX, y_:batchY})
 
-     # test in every epoch
-     correct_prediction = tf.equal(tf.argmax(preOut, 1), tf.argmax(yGroundTruth, 1))
+     correct_prediction = tf.equal(tf.argmax(preOut, 1), tf.argmax(y_, 1))
      accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32), 0)
-     correctRate = mySession.run(accuracy, feed_dict={x:testData, yGroundTruth:testLabel})
+     correctRate = mySession.run(accuracy, feed_dict={x:testData, y_:testLabel})
      print(i,",",hiddenLayerListStr,",",batchSize,",",learningRate,",", nTest,",",correctRate)
   mySession.close()
 

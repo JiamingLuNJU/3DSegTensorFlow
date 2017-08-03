@@ -58,4 +58,3 @@ Install wheel:
 sudo -H pip3 install ~/temp/tensorflow_pkg/tensorflow-1.3.0rc1-cp36-cp36m-macosx_10_12_x86_64.whl
 
 =========================================
-
