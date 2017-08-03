@@ -53,7 +53,7 @@ def main():
   fileData.seek(0)
 
   # read csv file
-  print("Infor: reading the T1T2 and Label csv file ......")
+  print("Infor: reading the T1T2 and Label csv file ......\n")
   data  = np.ndarray(shape=(totalExamples,InputWidth), dtype=int)
   label = np.zeros(shape=(totalExamples,LabelWidth), dtype=int)
   row = 0
@@ -74,6 +74,8 @@ def main():
   trainLabel = label[0:nTrain]
   testData = data[nTrain:totalExamples]
   testLabel = label[nTrain:totalExamples]
+  print("Number of train examples: ", nTrain)
+  print("Number of test examples: ", nTest)
 
   # start time computation
   print("Start Tensorflow Neural Network at:", time.strftime("%Y-%m-%d %H:%M:%S %Z", time.localtime(time.time())))
@@ -100,8 +102,6 @@ def main():
   mySession = tf.Session()
   mySession.run(tf.global_variables_initializer())
   hiddenLayerListStr = "["+ "-".join(str(e) for e in hiddenLayerList)+"]"
-  print("Number of train examples: ", nTrain)
-  print("Number of test examples: ", nTest)
   print("===============================================================================")
   print("Epoch, HiddenLayersWidth, BatchSize, LearningRate, NumTestExamples, CorrectRate")
   for i in range(epoches):
@@ -120,10 +120,10 @@ def main():
      print(i,",",hiddenLayerListStr,",",batchSize,",",learningRate,",", nTest,",",correctRate)
   mySession.close()
 
-  diffTime = time.perf_counter()-startTime
-  print("End Tensorflow Neural Network at:", time.strftime("%Y-%m-%d %H:%M:%S %Z", time.localtime(time.time())))
-  print("Computation time for Tensorflow Neural Network: ", diffTime, "seconds.")
+  diffTime = time.perf_counter() - startTime
   print("==========End of Tensorflow Neural Network=============")
+  print("Computation time for Tensorflow Neural Network: ", diffTime, "seconds.")
+  print("End Tensorflow Neural Network at:", time.strftime("%Y-%m-%d %H:%M:%S %Z", time.localtime(time.time())))
 
 if __name__ == "__main__":
    main()
