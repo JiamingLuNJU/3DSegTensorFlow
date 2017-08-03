@@ -73,6 +73,14 @@ def main():
   testData = data[nTrain:totalExamples]
   testLabel = label[nTrain:totalExamples]
 
+  #debug
+  nRow = testLabel.shape[0]
+  rate = testLabel[:,0].sum()
+  print("testLabel 1 rate at first column: 0.537711 is =====", rate*1.0/nRow)
+  print("!!!!!This is the problem!!!!!")
+
+
+
   # start time computation
   print("Start Tensorflow Neural Network at:", time.strftime("%Y-%m-%d %H:%M:%S %Z", time.localtime(time.time())))
   startTime = time.perf_counter()
