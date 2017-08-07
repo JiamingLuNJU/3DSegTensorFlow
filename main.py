@@ -95,10 +95,12 @@ def main():
   preOut = x
   nLayer = 0
   for width in hiddenLayerList:
-    #W = tf.Variable(tf.random_normal([preWidth,width],stddev=0.35)) # which results a lot of zeros in output
-    W_name = "W"+str(nLayer)
-    W = tf.get_variable(W_name, shape=[preWidth,width], initializer=tf.contrib.layers.xavier_initializer())
-    b = tf.Variable(tf.random_uniform([width],minval=0,maxval=0.5))
+    # random_normal initialization result a lot of zeros in output for 2 pixels input case
+    W = tf.Variable(tf.random_normal([preWidth,width],mean=10, stddev=1)) # which results a lot of zeros in output
+    # Xavier initialization also results a lot of zeros in output
+    # W_name = "W"+str(nLayer)
+    # W = tf.get_variable(W_name, shape=[preWidth,width], initializer=tf.contrib.layers.xavier_initializer())
+    b = tf.Variable(tf.random_uniform([width],minval=0.1,maxval=0.5))
     preOut = tf.nn.relu(tf.matmul(preOut, W) + b)
     preWidth = width
     nLayer += 1
