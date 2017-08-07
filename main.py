@@ -24,7 +24,7 @@ def usage():
          + "3. HiddenLayerStructure is number string separated by comma without a space. e.g. 80,60,50,50,26\n"\
          + "4. The width of last layer should be the maximum label value plus 1 for classification goal;\n"\
          + "5. LearningRate is an initial learningRate, a float number larger than 1e-4, which will decay every 3 epoches;\n"\
-         + "6. Usage Example: python3 ./main.py T1T2LabelCubic.csv 20  80,60,40,26 0.002\n"
+         + "6. Usage Example: python3 ./main.py T1T2LabelCubic.csv 8  120,80,40,26 0.002\n"
   print(usageInfo)
 
 def main():
@@ -45,6 +45,7 @@ def main():
 
   epoches = int(sys.argv[2])
   hiddenLayerList = [int(elem) for elem in sys.argv[3].split(',')]
+
   learningRate = float(sys.argv[4])
   fileData.seek(0)
   totalExamples = sum(1 for line in fileData)
@@ -73,6 +74,15 @@ def main():
   print("Number of features in train data:", data.shape[1])
   print("Number of train examples: ", nTrain)
   print("Number of test examples: ", nTest)
+
+
+  #===============Debug========
+  nZeroAtFirstCol = 0;
+  for i in range(nTest):
+    if testLabel[i,0] == 1:
+        nZeroAtFirstCol +=1
+  print("Rate of Output 0 at output layer: ", nZeroAtFirstCol/nTest)
+  #===============Debug========
 
   # start time computation
   print("Start Tensorflow Neural Network at:", time.strftime("%Y-%m-%d %H:%M:%S %Z", time.localtime(time.time())))
