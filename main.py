@@ -11,7 +11,7 @@ import sys
 import numpy as np
 import time
 
-InputWidth = 2
+InputWidth = 56  # 2 central pixels plus 2 cubes of 3X3
 LabelWidth = 26  # Groundtruth label is from 0 to 25
 batchSize = 100
 
@@ -70,6 +70,7 @@ def main():
   trainLabel = label[0:nTrain]
   testData = data[nTrain:totalExamples]
   testLabel = label[nTrain:totalExamples]
+  print("Number of features in train data:", data.shape[1])
   print("Number of train examples: ", nTrain)
   print("Number of test examples: ", nTest)
 
@@ -86,20 +87,20 @@ def main():
   for width in hiddenLayerList:
     #W = tf.Variable(tf.random_normal([preWidth,width],stddev=0.35)) # which results a lot of zeros in output
     W_name = "W"+str(nLayer)
-    nLayer +=1
     W = tf.get_variable(W_name, shape=[preWidth,width], initializer=tf.contrib.layers.xavier_initializer())
     b = tf.Variable(tf.random_uniform([width],minval=0,maxval=0.5))
     preOut = tf.nn.relu(tf.matmul(preOut, W) + b)
     preWidth = width
+    nLayer += 1
 
   cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_,logits=preOut))
 
   # train and test
   mySession = tf.Session()
   mySession.run(tf.global_variables_initializer())
-  hiddenLayerListStr = "["+ "-".join(str(e) for e in hiddenLayerList)+"]"
+  layerListStr = "["+str(InputWidth)+"-"+ "-".join(str(e) for e in hiddenLayerList)+"]"
   print("===============================================================================")
-  print("Epoch, HiddenLayersWidth, BatchSize, LearningRate, NumTestExamples, CorrectRate")
+  print("Epoch, LayersWidth, BatchSize, LearningRate, NumTestExamples, CorrectRate")
   for i in range(epoches):
      train_step = tf.train.GradientDescentOptimizer(learning_rate=learningRate).minimize(cross_entropy)
      if (0 != i and 0 == i % 3 and learningRate > 1.0e-8):
@@ -113,7 +114,7 @@ def main():
      correct_prediction = tf.equal(tf.argmax(preOut, 1), tf.argmax(y_, 1))
      accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32), 0)
      correctRate = mySession.run(accuracy, feed_dict={x:testData, y_:testLabel})
-     print(i,",",hiddenLayerListStr,",",batchSize,",",learningRate,",", nTest,",",correctRate)
+     print(i,",",layerListStr,",",batchSize,",",learningRate,",", nTest,",",correctRate)
   mySession.close()
 
   diffTime = time.perf_counter() - startTime
