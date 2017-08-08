@@ -11,7 +11,6 @@ import sys
 import numpy as np
 import time
 
-InputWidth = 56  # 2 central pixels plus 2 cubes of 3X3
 LabelWidth = 26  # Groundtruth label is from 0 to 25
 batchSize = 100
 
@@ -19,10 +18,10 @@ def usage():
   usageInfo = "Usage:\n"\
          + "python3 main.py T1T2LabelFilename Epoches HiddenLayerStructure LearningRate\n"\
          + "Notes:\n"\
-         + "1  T1T2LabelFilename is the input csv file with a row representing an example and the last column is a label, which is a converted form original nii files;\n"\
+         + "1  T1T2LabelFilename is the input csv file with a row representing an example and the last column is a label, which is a converted csv from original nii files;\n"\
          + "2. Epoches is an integer larger than zero;\n"\
-         + "3. HiddenLayerStructure is number string separated by comma without a space. e.g. 80,60,50,50,26\n"\
-         + "4. The width of last layer should be the maximum label value plus 1 for classification goal;\n"\
+         + "3. HiddenLayerStructure is number string separated by comma without spaces. e.g. 80,60,50,50,26\n"\
+         + "4. The width of last layer should be the maximum label value plus 1 for classification purpose;\n"\
          + "5. LearningRate is an initial learningRate, a float number larger than 1e-4, which will decay every 3 epoches;\n"\
          + "6. Usage Example: python3 ./main.py T1T2LabelCubic.csv 8  120,80,40,26 0.002\n"
   print(usageInfo)
@@ -45,14 +44,20 @@ def main():
 
   epoches = int(sys.argv[2])
   hiddenLayerList = [int(elem) for elem in sys.argv[3].split(',')]
-
   learningRate = float(sys.argv[4])
+
+  # get inputWidth of file
+  firstLine = fileData.readline()
+  firstLine = firstLine.split(',')
+  firstLine.pop(-1)
+  InputWidth = len(firstLine) -1 # the last column is a label column
+  # get the number of the total obserbations (examples)
   fileData.seek(0)
   totalExamples = sum(1 for line in fileData)
   fileData.seek(0)
 
   # read csv file
-  print("Infor: reading the T1T2 and Label csv file ......\n")
+  print("Info: reading the T1T2 and Label csv file ......\n")
   data  = np.ndarray(shape=(totalExamples,InputWidth), dtype=int)
   label = np.zeros(shape=(totalExamples,LabelWidth), dtype=int)
   row = 0
@@ -75,14 +80,13 @@ def main():
   print("Number of train examples: ", nTrain)
   print("Number of test examples: ", nTest)
 
-
-  #===============Debug========
+  #===============Debug=============================
   nZeroAtFirstCol = 0;
   for i in range(nTest):
     if testLabel[i,0] == 1:
         nZeroAtFirstCol +=1
-  print("Rate of Output 0 at output layer: ", nZeroAtFirstCol/nTest)
-  #===============Debug========
+  print("Rate of 1s at first column of label,which means network output all zeros will get this result): ", nZeroAtFirstCol/nTest)
+  #===============Debug==============================
 
   # start time computation
   print("Start Tensorflow Neural Network at:", time.strftime("%Y-%m-%d %H:%M:%S %Z", time.localtime(time.time())))
@@ -95,11 +99,14 @@ def main():
   preOut = x
   nLayer = 0
   for width in hiddenLayerList:
-    # random_normal initialization result a lot of zeros in output for 2 pixels input case
-    W = tf.Variable(tf.random_normal([preWidth,width],mean=10, stddev=1)) # which results a lot of zeros in output
-    # Xavier initialization also results a lot of zeros in output
-    # W_name = "W"+str(nLayer)
-    # W = tf.get_variable(W_name, shape=[preWidth,width], initializer=tf.contrib.layers.xavier_initializer())
+    if 2 == InputWidth:
+       # Xavier initialization also results a lot of zeros in output in 56 input pixels case
+       W_name = "W"+str(nLayer)
+       W = tf.get_variable(W_name, shape=[preWidth,width], initializer=tf.contrib.layers.xavier_initializer())
+    else:
+       # random_normal initialization results a lot of zeros in output for 2 pixels input case
+       W = tf.Variable(tf.random_normal([preWidth, width], mean=10, stddev=1))
+
     b = tf.Variable(tf.random_uniform([width],minval=0.1,maxval=0.5))
     preOut = tf.nn.relu(tf.matmul(preOut, W) + b)
     preWidth = width
