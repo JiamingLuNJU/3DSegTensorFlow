@@ -13,7 +13,7 @@ import time
 import random
 
 LabelWidth = 26  # Groundtruth label is from 0 to 25
-batchSize = 100
+batchSize = 113  #prime number
 
 def usage():
   usageInfo = "Usage:\n"\
@@ -21,7 +21,7 @@ def usage():
          + "Notes:\n"\
          + "1  T1T2LabelFilename is the input csv file with a row representing an example and the last column is a label, which is a converted csv from original nii files;\n"\
          + "2. Epoches is an integer larger than zero;\n"\
-         + "3. HiddenLayerStructure is number string separated by comma without spaces. e.g. 80,60,50,50,26\n"\
+         + "3. HiddenLayerStructure is number string separated by comma without spaces, and prime width of layers is really helpful in training. e.g. 199,167,139,101,71,41,26\n"\
          + "4. The width of last layer should be the maximum label value plus 1 for classification purpose;\n"\
          + "5. LearningRate is an initial learningRate, a float number larger than 1e-4, which will decay every 3 epoches;\n"\
          + "6. Usage Example: python3 ./main.py T1T2LabelCubic.csv 8 240,200,160,120,80,40,26 0.002\n"
@@ -82,11 +82,12 @@ def main():
   print("Number of test examples: ", nTest)
 
   #===============Debug=============================
-  nZeroAtFirstCol = 0;
-  for i in range(nTest):
-    if testLabel[i,0] == 1:
-        nZeroAtFirstCol +=1
-  print("Rate of 1s at first column of label,which means network output all zeros will get this result): ", nZeroAtFirstCol/nTest)
+  #nZeroAtFirstCol = 0;
+  #for i in range(nTest):
+  #  if testLabel[i,0] == 1:
+  #      nZeroAtFirstCol +=1
+  #print("Rate of 1s at first column of label,which means network output all zeros will get this result): ", nZeroAtFirstCol/nTest)
+  # 0.5247328947864316
   #===============Debug==============================
 
   # start time computation
@@ -108,12 +109,12 @@ def main():
        # random_normal initialization results a lot of zeros in output for 2 pixels input case
        W_mean = 1/width
        W_stddev = W_mean/2
-       W_seed = random.randint(1,100)
-       W_graph_seed = random.randint(100,200)
+       W_seed = random.randint(7,127)
+       W_graph_seed = random.randint(11,197)
        tf.set_random_seed(W_graph_seed*width*preWidth)
        W = tf.Variable(tf.truncated_normal([preWidth, width], mean=W_mean, stddev=W_stddev, seed=W_seed))
 
-    b = tf.Variable(tf.random_uniform([width],minval=0.1,maxval=0.5))
+    b = tf.Variable(tf.random_uniform([width],minval=0.01,maxval=0.03))
     preOut = tf.nn.relu(tf.matmul(preOut, W) + b)
     preWidth = width
     nLayer += 1
@@ -128,9 +129,6 @@ def main():
   print("Epoch, LayersWidth, BatchSize, LearningRate, NumTestExamples, CorrectRate")
   for i in range(epoches):
      train_step = tf.train.GradientDescentOptimizer(learning_rate=learningRate).minimize(cross_entropy)
-     if (0 != i and 0 == i % 3 and learningRate > 1.0e-8):
-       learningRate = learningRate * 0.6
-
      for j in range(0, nTrain, batchSize):
         batchX = trainData[j:j+batchSize]
         batchY = trainLabel[j:j+batchSize]
@@ -140,6 +138,8 @@ def main():
      accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32), 0)
      correctRate = mySession.run(accuracy, feed_dict={x:testData, y_:testLabel})
      print(i,",",layerListStr,",",batchSize,",",learningRate,",", nTest,",",correctRate)
+     if (0 != i and 0 == i % 3 and learningRate > 1.0e-8):
+       learningRate = learningRate * 0.6
 
      #testOut = mySession.run(preOut, feed_dict={x:testData, y_:testLabel})
      #print("shape of preOut:", testOut.shape)
