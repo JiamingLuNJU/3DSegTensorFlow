@@ -10,6 +10,7 @@ import tensorflow as tf
 import sys
 import numpy as np
 import time
+import random
 
 LabelWidth = 26  # Groundtruth label is from 0 to 25
 batchSize = 100
@@ -23,7 +24,7 @@ def usage():
          + "3. HiddenLayerStructure is number string separated by comma without spaces. e.g. 80,60,50,50,26\n"\
          + "4. The width of last layer should be the maximum label value plus 1 for classification purpose;\n"\
          + "5. LearningRate is an initial learningRate, a float number larger than 1e-4, which will decay every 3 epoches;\n"\
-         + "6. Usage Example: python3 ./main.py T1T2LabelCubic.csv 8  120,80,40,26 0.002\n"
+         + "6. Usage Example: python3 ./main.py T1T2LabelCubic.csv 8 320,300,240,200,160,120,80,40,26 0.002\n"
   print(usageInfo)
 
 def main():
@@ -100,12 +101,17 @@ def main():
   nLayer = 0
   for width in hiddenLayerList:
     if 2 == InputWidth:
-       # Xavier initialization also results a lot of zeros in output in 56 input pixels case
+       # Xavier initialization results all nan output in 56 input pixels case
        W_name = "W"+str(nLayer)
        W = tf.get_variable(W_name, shape=[preWidth,width], initializer=tf.contrib.layers.xavier_initializer())
     else:
        # random_normal initialization results a lot of zeros in output for 2 pixels input case
-       W = tf.Variable(tf.random_normal([preWidth, width], mean=10, stddev=1))
+       W_mean = 1/width
+       W_stddev = W_mean/2
+       W_seed = random.randint(1,100)
+       W_graph_seed = random.randint(100,200)
+       tf.set_random_seed(W_graph_seed*width*preWidth)
+       W = tf.Variable(tf.truncated_normal([preWidth, width], mean=W_mean, stddev=W_stddev, seed=W_seed))
 
     b = tf.Variable(tf.random_uniform([width],minval=0.1,maxval=0.5))
     preOut = tf.nn.relu(tf.matmul(preOut, W) + b)
@@ -134,6 +140,11 @@ def main():
      accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32), 0)
      correctRate = mySession.run(accuracy, feed_dict={x:testData, y_:testLabel})
      print(i,",",layerListStr,",",batchSize,",",learningRate,",", nTest,",",correctRate)
+
+     #testOut = mySession.run(preOut, feed_dict={x:testData, y_:testLabel})
+     #print("shape of preOut:", testOut.shape)
+     #print(testOut)
+
   mySession.close()
 
   diffTime = time.perf_counter() - startTime
