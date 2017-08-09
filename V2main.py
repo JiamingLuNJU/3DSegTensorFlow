@@ -90,7 +90,7 @@ def main():
   #  if testLabel[i,0] == 1:
   #      nZeroAtFirstCol +=1
   #print("Rate of 1s at first column of label,which means network output all zeros, all nan, or always maximum at first column, will get this result): ", nZeroAtFirstCol/nTest)
-  # 0.5247328947864316 for cubic case, 0.53711 for 2 pixel case.
+  # 0.5247328947864316 for cubic case, 0.537711 for 2 pixel case.
   #===============Debug==============================
 
   # start time computation
@@ -106,16 +106,16 @@ def main():
   for width in hiddenLayerList:
     #if 2 == InputWidth:
        # Xavier initialization results all nan output in 54 input pixels case
-    W_name = "W"+str(nLayer)
-    W = tf.get_variable(W_name, shape=[preWidth,width], initializer=tf.contrib.layers.xavier_initializer())
+       #W_name = "W"+str(nLayer)
+       #W = tf.get_variable(W_name, shape=[preWidth,width], initializer=tf.contrib.layers.xavier_initializer())
     # else:
-    #    # random_normal initialization results a lot of zeros in output for 2 pixels input case
-    #    W_mean = 1/width
-    #    W_stddev = W_mean/2
-    #    W_seed = random.randint(7,127)
-    #    W_graph_seed = random.randint(11,197)
-    #    tf.set_random_seed(W_graph_seed*width*preWidth)
-    #    W = tf.Variable(tf.truncated_normal([preWidth, width], mean=W_mean, stddev=W_stddev, seed=W_seed))
+       # random_normal initialization results a lot of zeros in output for 2 pixels input case
+    W_mean = 1/width
+    W_stddev = W_mean/2
+    W_seed = random.randint(7,127)
+    W_graph_seed = random.randint(11,197)
+    tf.set_random_seed(W_graph_seed*width*preWidth)
+    W = tf.Variable(tf.truncated_normal([preWidth, width], mean=W_mean, stddev=W_stddev, seed=W_seed))
 
     b = tf.Variable(tf.random_uniform([width],minval=0.1,maxval=0.5))
     preOut = tf.nn.relu(tf.matmul(preOut, W) + b)
