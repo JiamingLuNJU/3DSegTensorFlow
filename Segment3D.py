@@ -6,6 +6,9 @@ Software packages: Intel DAAL and Tensorflow 1.3;
 Author: Hui Xie August 2017
 
 '''
+## this is a stable version
+
+
 import tensorflow as tf
 import sys
 import numpy as np
@@ -17,14 +20,14 @@ batchSize = 100  #prime number
 
 def usage():
   usageInfo = "Usage:\n"\
-         + "python3 main.py T1T2LabelFilename Epoches HiddenLayerStructure LearningRate\n"\
+         + "python3 Segment3D.py T1T2LabelFilename Epoches HiddenLayerStructure LearningRate\n"\
          + "Notes:\n"\
          + "1  T1T2LabelFilename is the input csv file with a row representing an example and the last column is a label, which is a converted csv from original 3 nii files;\n"\
          + "2. Epoches is an integer larger than zero;\n"\
          + "3. HiddenLayerStructure is number string separated by comma without spaces, e.g. 199,167,139,101,71,41,26\n"\
          + "4. The width of last layer should be the maximum label value plus 1 for classification purpose;\n"\
          + "5. LearningRate is an initial learningRate, a float number larger than 1e-4, which will decay every 3 epoches;\n"\
-         + "6. Usage Example: python3 ./main.py T1T2LabelCubic.csv 10 240,200,160,120,80,40,26 0.002\n"
+         + "6. Usage Example: python3 Segment3D.py T1T2LabelCubic.csv 10 240,200,160,120,80,40,26 0.002\n"
   print(usageInfo)
 
 def main():
