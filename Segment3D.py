@@ -117,7 +117,7 @@ def main():
        tf.set_random_seed(W_graph_seed*width*preWidth)
        W = tf.Variable(tf.truncated_normal([preWidth, width], mean=W_mean, stddev=W_stddev, seed=W_seed))
 
-    b = tf.Variable(tf.random_uniform([width],minval=0.002,maxval=0.002))
+    b = tf.Variable(tf.random_uniform([width],minval=0.1,maxval=0.5))
     preOut = tf.nn.relu(tf.matmul(preOut, W) + b)
     preWidth = width
     nLayer += 1

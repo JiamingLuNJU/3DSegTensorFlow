@@ -104,20 +104,20 @@ def main():
   preOut = x
   nLayer = 0
   for width in hiddenLayerList:
-    if 2 == InputWidth:
+    #if 2 == InputWidth:
        # Xavier initialization results all nan output in 54 input pixels case
-       W_name = "W"+str(nLayer)
-       W = tf.get_variable(W_name, shape=[preWidth,width], initializer=tf.contrib.layers.xavier_initializer())
-    else:
-       # random_normal initialization results a lot of zeros in output for 2 pixels input case
-       W_mean = 1/width
-       W_stddev = W_mean/2
-       W_seed = random.randint(7,127)
-       W_graph_seed = random.randint(11,197)
-       tf.set_random_seed(W_graph_seed*width*preWidth)
-       W = tf.Variable(tf.truncated_normal([preWidth, width], mean=W_mean, stddev=W_stddev, seed=W_seed))
+    W_name = "W"+str(nLayer)
+    W = tf.get_variable(W_name, shape=[preWidth,width], initializer=tf.contrib.layers.xavier_initializer())
+    # else:
+    #    # random_normal initialization results a lot of zeros in output for 2 pixels input case
+    #    W_mean = 1/width
+    #    W_stddev = W_mean/2
+    #    W_seed = random.randint(7,127)
+    #    W_graph_seed = random.randint(11,197)
+    #    tf.set_random_seed(W_graph_seed*width*preWidth)
+    #    W = tf.Variable(tf.truncated_normal([preWidth, width], mean=W_mean, stddev=W_stddev, seed=W_seed))
 
-    b = tf.Variable(tf.random_uniform([width],minval=0.002,maxval=0.002))
+    b = tf.Variable(tf.random_uniform([width],minval=0.1,maxval=0.5))
     preOut = tf.nn.relu(tf.matmul(preOut, W) + b)
     preWidth = width
     nLayer += 1
