@@ -27,7 +27,8 @@ def usage():
          + "3. HiddenLayerStructure is number string separated by comma without spaces, e.g. 199,167,139,101,71,41,26\n"\
          + "4. The width of last layer should be the maximum label value plus 1 for classification purpose;\n"\
          + "5. LearningRate is an initial learningRate, a float number larger than 1e-4, which will decay every 3 epoches;\n"\
-         + "6. Usage Example: python3 Segment3D.py T1T2LabelCubic.csv 10 240,200,160,120,80,40,26 0.002\n"
+         + "6. Usage Example 1: python3 Segment3D.py T1T2LabelCubic.csv 10 240,200,160,120,80,40,26 0.002\n"\
+         + "7. Usage Example 2: python3 Segment3D.py T1T2Label2Pixels.csv 10 120,100,80,60,40,26 0.002\n"
   print(usageInfo)
 
 def main():
