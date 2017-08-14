@@ -80,6 +80,9 @@ pip install --upgrade --user ~/path_to_save_wheel/wheel_name.whl
 ************************************************************
 Use conda to install intel python
 
+python3 at: /Users/hxie1/miniconda3/bin/python3.5
+pathon3 lib: /Users/hxie1/miniconda3/lib
+
 conda search --full-name python
 conda install python=3.5.3  # for intel Python3
 conda install tensorflow=1.1.0
