@@ -75,3 +75,11 @@ bazel build --config=mkl --copt=”-DEIGEN_USE_VML” -c opt //tensorflow/tools/
 Generate pip3 wheel:
 bazel-bin/tensorflow/tools/pip_package/build_pip_package ~/path_to_save_wheel
 pip install --upgrade --user ~/path_to_save_wheel/wheel_name.whl
+
+************************************************************
+************************************************************
+Use conda to install intel python
+
+conda search --full-name python
+conda install python=3.5.3  # for intel Python3
+conda install tensorflow=1.1.0
