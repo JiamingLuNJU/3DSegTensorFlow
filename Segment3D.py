@@ -116,7 +116,9 @@ def main():
        #W_seed = random.randint(1,100)
        #W_graph_seed = random.randint(100,200)
        #tf.set_random_seed(W_graph_seed*width*preWidth)
-       W_seed = (nLayer+42)*777
+
+       #W_seed = nLayer*73+41 # this can achieve 91% accuracy in 10 epoches
+       W_seed = nLayer * 73 + 11
        W = tf.Variable(tf.truncated_normal([preWidth, width], mean=W_mean, stddev=W_stddev, seed=W_seed))
 
     b = tf.Variable(tf.random_uniform([width],minval=0.1,maxval=0.5)) # when labels are not evenly distribution, use bigger bias
