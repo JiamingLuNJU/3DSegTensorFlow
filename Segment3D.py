@@ -113,9 +113,10 @@ def main():
        # random_normal initialization results a lot of zeros in output for 2 pixels input case
        W_mean = 1/width
        W_stddev = W_mean/2
-       W_seed = random.randint(1,100)
-       W_graph_seed = random.randint(100,200)
-       tf.set_random_seed(W_graph_seed*width*preWidth)
+       #W_seed = random.randint(1,100)
+       #W_graph_seed = random.randint(100,200)
+       #tf.set_random_seed(W_graph_seed*width*preWidth)
+       W_seed = (nLayer+42)*777
        W = tf.Variable(tf.truncated_normal([preWidth, width], mean=W_mean, stddev=W_stddev, seed=W_seed))
 
     b = tf.Variable(tf.random_uniform([width],minval=0.1,maxval=0.5)) # when labels are not evenly distribution, use bigger bias
