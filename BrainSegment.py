@@ -113,8 +113,8 @@ class BrainSegment:
             preOut = tf.nn.relu(tf.matmul(preOut, W) + b)
             preWidth = width
             nLayer += 1
-        self.out = preOut;
-        self.cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=preOut))
+        self.outLayer = preOut
+        self.cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=self.y_, logits=preOut))
 
     def trainAndTest(self,mySession):
         mySession.run(tf.global_variables_initializer())
@@ -130,7 +130,7 @@ class BrainSegment:
                 batchY = self.trainLabel[j:j + self.batchSize]
                 mySession.run(train_step, feed_dict={self.x: batchX, self.y_: batchY})
 
-            correct_prediction = tf.equal(tf.argmax(self.Out, 1), tf.argmax(self.y_, 1))
+            correct_prediction = tf.equal(tf.argmax(self.outLayer, 1), tf.argmax(self.y_, 1))
             accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32), 0)
             correctRate = mySession.run(accuracy, feed_dict={self.x: self.testData, self.y_: self.testLabel})
             print(i, ",", layerListStr, ",", self.batchSize, ",", learningRate, ",", self.nTest, ",", correctRate)
