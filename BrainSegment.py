@@ -122,9 +122,9 @@ class BrainSegment:
         print("===============================================================================")
         print("Epoch, LayersWidth, BatchSize, LearningRate, NumTestExamples, CorrectRate")
         for i in range(self.epochs):
-            if (0 != i and 0 == i % 3 and learningRate > 1.0e-8):
-                learningRate = learningRate * 0.6
-            train_step = tf.train.GradientDescentOptimizer(learning_rate=learningRate).minimize(self.cross_entropy)
+            if (0 != i and 0 == i % 3 and self.learningRate > 1.0e-4):
+                self.learningRate = self.learningRate * 0.6
+            train_step = tf.train.GradientDescentOptimizer(learning_rate=self.learningRate).minimize(self.cross_entropy)
             for j in range(0, self.nTrain, self.batchSize):
                 batchX = self.trainData[j:j + self.batchSize]
                 batchY = self.trainLabel[j:j + self.batchSize]
@@ -133,6 +133,6 @@ class BrainSegment:
             correct_prediction = tf.equal(tf.argmax(self.outLayer, 1), tf.argmax(self.y_, 1))
             accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32), 0)
             correctRate = mySession.run(accuracy, feed_dict={self.x: self.testData, self.y_: self.testLabel})
-            print(i, ",", layerListStr, ",", self.batchSize, ",", learningRate, ",", self.nTest, ",", correctRate)
-
+            print(i, ",", layerListStr, ",", self.batchSize, ",", self.learningRate, ",", self.nTest, ",", correctRate)
+        return correctRate
 
