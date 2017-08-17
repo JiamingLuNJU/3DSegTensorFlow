@@ -26,6 +26,7 @@ def main():
 
        brainSegment.constructGraph()
 
+       brainSegment.learningRate = brainSegment.inputLearningRate
        brainSegment.trainAndTest(mySession)
        mySession.close()
 

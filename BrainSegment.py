@@ -43,6 +43,7 @@ class BrainSegment:
         self.epochs = int(argv[2])
         self.hiddenLayerList = [int(elem) for elem in argv[3].split(',')]
         self.learningRate = float(argv[4])
+        self.inputLearningRate = self.learningRate
         return True
 
     def readFile(self):
