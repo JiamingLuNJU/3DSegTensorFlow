@@ -13,7 +13,7 @@ import tensorflow as tf
 import sys
 import numpy as np
 import time
-import random
+#import random
 
 LabelWidth = 26  # Groundtruth label is from 0 to 25
 batchSize = 100  #prime number
@@ -26,9 +26,10 @@ def usage():
          + "2. Epoches is an integer larger than zero;\n"\
          + "3. HiddenLayerStructure is number string separated by comma without spaces, e.g. 199,167,139,101,71,41,26\n"\
          + "4. The width of last layer should be the maximum label value plus 1 for classification purpose;\n"\
-         + "5. LearningRate is an initial learningRate, a float number larger than 1e-4, which will decay every 3 epoches;\n"\
-         + "6. Usage Example 1: python3 Segment3D.py T1T2LabelCubic.csv 10 280,240,200,160,120,80,40,26 0.002\n"\
-         + "7. Usage Example 2: python3 Segment3D.py T1T2Label2Pixels.csv 10 120,100,80,60,40,26 0.002\n"
+         + "5. LearningRate is an initial learningRate, a float number larger than 1e-4, which will decay every 3 epoches;\n" \
+         + "6. Usage Example 1: python3 Segment3D.py T1T2LabelCubicNormalize.csv 10 280,240,200,160,120,80,40,26 0.002\n" \
+         + "7. Usage Example 2: python3 Segment3D.py T1T2LabelCubic.csv 10 280,240,200,160,120,80,40,26 0.002\n"\
+         + "8. Usage Example 3: python3 Segment3D.py T1T2Label2Pixels.csv 10 120,100,80,60,40,26 0.002\n"
   print(usageInfo)
 
 def main():
@@ -63,8 +64,8 @@ def main():
 
   # read csv file
   print("Info: reading the T1T2 and Label csv file ......\n")
-  data  = np.ndarray(shape=(totalExamples,InputWidth), dtype=int)
-  label = np.zeros(shape=(totalExamples,LabelWidth), dtype=int)
+  data  = np.ndarray(shape=(totalExamples,InputWidth), dtype=float)
+  label = np.zeros(shape=(totalExamples,LabelWidth), dtype=float)
   row = 0
   for line in fileData:
     rowList = line.split(',')
@@ -113,12 +114,14 @@ def main():
        # random_normal initialization results a lot of zeros in output for 2 pixels input case
        W_mean = 1/width
        W_stddev = W_mean/2
+
+       # random seed make result vary too much
        #W_seed = random.randint(1,100)
        #W_graph_seed = random.randint(100,200)
        #tf.set_random_seed(W_graph_seed*width*preWidth)
 
-       #W_seed = nLayer*73+41 # this can achieve 91% accuracy in 10 epoches
-       W_seed = nLayer * 73 + 11
+       #W_seed = nLayer*73+41 # this can achieve 91.4% accuracy in 10 epochs for [54-360-320-280-240-200-160-120-80-40-26]
+       W_seed = nLayer * 73 + 11 # this can achieve 91.4% accuracy in 10 epochs for [54-360-320-280-240-200-160-120-80-40-26]
        W = tf.Variable(tf.truncated_normal([preWidth, width], mean=W_mean, stddev=W_stddev, seed=W_seed))
 
     b = tf.Variable(tf.random_uniform([width],minval=0.1,maxval=0.5)) # when labels are not evenly distribution, use bigger bias
