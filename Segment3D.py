@@ -6,7 +6,7 @@ Software packages: Intel DAAL and Tensorflow 1.3;
 Author: Hui Xie August 2017
 
 '''
-## this is a stable version
+## this is a stable version of monolithic program
 
 
 import tensorflow as tf

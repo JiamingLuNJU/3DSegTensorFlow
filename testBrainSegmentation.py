@@ -1,4 +1,4 @@
-
+# this program test the class BrainSegment
 
 import BrainSegment
 import sys
