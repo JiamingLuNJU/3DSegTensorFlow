@@ -2,7 +2,6 @@
 
 import BrainSegment
 import sys
-import time
 
 def main():
    brainSegment= BrainSegment.BrainSegment()

@@ -1,5 +1,7 @@
 import tensorflow as tf
 import numpy as np
+import random
+import time
 
 class BrainSegment:
     labelWidth = 26  # Groundtruth label is from 0 to 25
@@ -7,7 +9,7 @@ class BrainSegment:
 
     def __init__(self):
         # null content
-        a = 0
+        self.testSeed = False
 
     def printUsage(self):
         usageInfo = "Usage:\n" \
@@ -83,13 +85,16 @@ class BrainSegment:
         print("Number of test examples: ", self.nTest)
         return True
 
-    def constructGraph(self):
+    def constructGraph(self,testSeed=False):
         # Construct a Deep Learning network model
+        if testSeed:
+            self.testSeed = True
         self.x = tf.placeholder(tf.float32, [None, self.InputWidth])
         self.y_ = tf.placeholder(tf.float32, [None, self.labelWidth])  # groundtruth
         preWidth = self.InputWidth
         preOut = self.x
         nLayer = 0
+        self.randomW_seed = []
         for width in self.hiddenLayerList:
             if 2 == self.InputWidth:
                 # Xavier initialization results all nan output in 54 input pixels case
@@ -100,13 +105,16 @@ class BrainSegment:
                 W_mean = 1 / width
                 W_stddev = W_mean / 2
 
-                # random seed make result vary too much
-                # W_seed = random.randint(1,100)
-                # W_graph_seed = random.randint(100,200)
-                # tf.set_random_seed(W_graph_seed*width*preWidth)
-
                 # W_seed = nLayer*73+41 # this can achieve 91.4% accuracy in 10 epochs for [54-360-320-280-240-200-160-120-80-40-26]
                 W_seed = nLayer * 73 + 11  # this can achieve 91.4% accuracy in 10 epochs for [54-360-320-280-240-200-160-120-80-40-26]
+                if testSeed:
+                    # random seed make result vary too much
+                    W_seed = random.randint(1,100)
+                    # W_graph_seed = random.randint(100,200)
+                    # tf.set_random_seed(W_graph_seed*width*preWidth)
+                    print("W_seed at width ", width, ": ", W_seed)
+                    self.randomW_seed.extend([width, W_seed])
+
                 W = tf.Variable(tf.truncated_normal([preWidth, width], mean=W_mean, stddev=W_stddev, seed=W_seed))
 
             b = tf.Variable(tf.random_uniform([width], minval=0.1,
@@ -117,9 +125,10 @@ class BrainSegment:
         self.outLayer = preOut
         self.cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=self.y_, logits=preOut))
 
+
     def trainAndTest(self,mySession):
         mySession.run(tf.global_variables_initializer())
-        layerListStr = "[" + str(self.InputWidth) + "-" + "-".join(str(e) for e in self.hiddenLayerList) + "]"
+        self.layerListStr = "[" + str(self.InputWidth) + "-" + "-".join(str(e) for e in self.hiddenLayerList) + "]"
         print("===============================================================================")
         print("Epoch, LayersWidth, BatchSize, LearningRate, NumTestExamples, CorrectRate")
         for i in range(self.epochs):
@@ -134,6 +143,22 @@ class BrainSegment:
             correct_prediction = tf.equal(tf.argmax(self.outLayer, 1), tf.argmax(self.y_, 1))
             accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32), 0)
             correctRate = mySession.run(accuracy, feed_dict={self.x: self.testData, self.y_: self.testLabel})
-            print(i, ",", layerListStr, ",", self.batchSize, ",", self.learningRate, ",", self.nTest, ",", correctRate)
+            print(i, ",", self.layerListStr, ",", self.batchSize, ",", self.learningRate, ",", self.nTest, ",", correctRate)
+
+        if correctRate >= 0.92:
+           self.printWSeedFile(correctRate)
+
         return correctRate
 
+    def printWSeedFile(self, correctRate):
+        if self.testSeed:
+            fileName = "Accuracy_"+str(int(correctRate*10000))+".txt"
+            seedFile = open(fileName, "a")
+            seedFile.write("Time: "+ time.strftime("%Y-%m-%d %H:%M:%S %Z\n", time.localtime(time.time())))
+            seedFile.write("LayerSturcture: "+self.layerListStr +"\n")
+            seedFile.write("Width and W_seed list: "+ ' '.join(str(e) for e in self.randomW_seed)+"\n")
+            seedFile.write("Epochs: "+str(self.epochs)+"\n")
+            seedFile.write("Arm *.rtxccuracy: "+ str(correctRate)+"\n")
+            seedFile.write("============================\n\n")
+            seedFile.close()
+            print("Update/Output a file: ", fileName)
