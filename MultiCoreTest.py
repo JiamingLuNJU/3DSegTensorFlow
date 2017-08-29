@@ -12,28 +12,26 @@ def main():
    brainSegment.readFile()
    brainSegment.splitTrainTestData()
 
-   nCores = 8+1
-   for i in range(1,nCores,1):
-       print ("\n\n$$$$   Current use core: ",i, "$$$$")
-       config = BrainSegment.tf.ConfigProto(
-           device_count={'CPU': i},
-           intra_op_parallelism_threads=i*2,
-           inter_op_parallelism_threads=i*2*2,
-           use_per_session_threads=True)
-       mySession = BrainSegment.tf.Session(config=config)
-       #print("Start Tensorflow Neural Network at:", time.strftime("%Y-%m-%d %H:%M:%S %Z", time.localtime(time.time())))
-       startTime = time.perf_counter()
+   print ("\n\n$$$$   Current use core: ",brainSegment.nCores, "$$$$")
+   config = BrainSegment.tf.ConfigProto(
+       device_count={'CPU': brainSegment.nCores},
+       intra_op_parallelism_threads=brainSegment.nCores*2,
+       inter_op_parallelism_threads=brainSegment.nCores*2*2,
+       use_per_session_threads=True)
+   mySession = BrainSegment.tf.Session(config=config)   #print("Start Tensorflow Neural Network at:", time.strftime("%Y-%m-%d %H:%M:%S %Z", time.localtime(time.time())))
+   startTime = time.perf_counter()
 
-       brainSegment.constructGraph()
+   brainSegment.constructGraph()
 
-       brainSegment.learningRate = brainSegment.inputLearningRate
-       brainSegment.trainAndTest(mySession)
-       mySession.close()
+   brainSegment.learningRate = brainSegment.inputLearningRate
+   brainSegment.trainAndTest(mySession)
+   mySession.close()
 
-       diffTime = time.perf_counter() - startTime
-       #print("==========End of Tensorflow Neural Network=============")
-       print("Computation time for", i, "cores: ",diffTime, "seconds.")
-       #print("End Tensorflow Neural Network at:", time.strftime("%Y-%m-%d %H:%M:%S %Z", time.localtime(time.time())))
+   diffTime = time.perf_counter() - startTime
+   #print("==========End of Tensorflow Neural Network=============")
+   print("Computation time for", brainSegment.nCores, "cores: ",diffTime, "seconds.")
+   #print("End Tensorflow Neural Network at:", time.strftime("%Y-%m-%d %H:%M:%S %Z", time.localtime(time.time())))
 
 if __name__ == "__main__":
+   print("====This is multi cores performance test====")
    main()

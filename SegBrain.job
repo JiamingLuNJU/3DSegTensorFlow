@@ -1,6 +1,10 @@
 #!/bin/sh
 # Python3 Segmentation Script runned in Argon
-#$ -cwd -N SegBrain -q HJ,COE,UI -pe smp 56  -e ~/temp/segError.txt -o ~/temp/segStdOutput.txt -M sheenxh@gmail.com  -m bea
-python3 ~/Projects/3DSegTensorFlow/testBrainSegmentation.py ~/temp/T1T2LabelCubicNormalize.csv 10 120,80,40,26 0.002
+# python3 ~/Projects/3DSegTensorFlow/testBrainSegmentation.py ~/temp/T1T2LabelCubicNormalize.csv 10 120,80,40,26 0.002
+for i in 'seq 1 4 50'
+do
+  qsub  -cwd -N SegBrain -q HJ,COE,UI -pe smp $i  -e ~/temp/segError_$i.txt -o ~/temp/segStdOutput_$i.txt -M sheenxh@gmail.com  -m ea
+  qsub -v nCore=$i python3 ~/Projects/3DSegTensorFlow/MultiCoreTest.py ~/temp/T1T2LabelCubicNormalize.csv 3 80,40,26 0.002 nCores
+done
 
 

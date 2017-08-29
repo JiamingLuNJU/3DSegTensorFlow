@@ -13,23 +13,24 @@ class BrainSegment:
 
     def printUsage(self):
         usageInfo = "Usage:\n" \
-                    + "python3 Segment3D.py T1T2LabelFilename Epoches HiddenLayerStructure LearningRate\n" \
+                    + "python3 Segment3D.py T1T2LabelFilename Epoches HiddenLayerStructure LearningRate nCores\n" \
                     + "Notes:\n" \
                     + "1  T1T2LabelFilename is the input csv file with a row representing an example and the last column is a label, which is a converted csv from original 3 nii files;\n" \
                     + "2. Epoches is an integer larger than zero;\n" \
                     + "3. HiddenLayerStructure is number string separated by comma without spaces, e.g. 199,167,139,101,71,41,26\n" \
                     + "4. The width of last layer should be the maximum label value plus 1 for classification purpose;\n" \
                     + "5. LearningRate is an initial learningRate, a float number larger than 1e-4, which will decay every 3 epoches;\n" \
-                    + "6. Usage Example 1: python3 Segment3D.py T1T2LabelCubicNormalize.csv 10 280,240,200,160,120,80,40,26 0.002\n" \
-                    + "7. Usage Example 2: python3 Segment3D.py T1T2LabelCubic.csv 10 280,240,200,160,120,80,40,26 0.002\n" \
-                    + "8. Usage Example 3: python3 Segment3D.py T1T2Label2Pixels.csv 10 120,100,80,60,40,26 0.002\n"
+                    + "6. nCores is optional parameter specifying the number of cores of CPU for using"\
+                    + "7. Usage Example 1: python3 Segment3D.py T1T2LabelCubicNormalize.csv 10 280,240,200,160,120,80,40,26 0.002\n" \
+                    + "8. Usage Example 2: python3 Segment3D.py T1T2LabelCubic.csv 10 280,240,200,160,120,80,40,26 0.002\n" \
+                    + "9. Usage Example 3: python3 Segment3D.py T1T2Label2Pixels.csv 10 120,100,80,60,40,26 0.002\n"
         print(usageInfo)
 
 
     def parseSysArg(self, argv):
         # parse input parameters
         argc = len(argv)
-        if 5 != argc:
+        if 5 != argc and 6 != argc:
             print("Error: the number of input parameters is incorrect. Quit.")
             self.printUsage()
             return False
@@ -46,6 +47,9 @@ class BrainSegment:
         self.hiddenLayerList = [int(elem) for elem in argv[3].split(',')]
         self.learningRate = float(argv[4])
         self.inputLearningRate = self.learningRate
+        self.nCores = 10
+        if 6 == argc:
+           self.nCores = int(argv[5])
         return True
 
     def readFile(self):
