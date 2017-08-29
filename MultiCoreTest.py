@@ -12,13 +12,14 @@ def main():
    brainSegment.readFile()
    brainSegment.splitTrainTestData()
 
-   print ("\n\n$$$$   Current use core: ",brainSegment.nCores, "$$$$")
+   print ("\n$$$$   Current use core: ",brainSegment.nCores, "$$$$")
    config = BrainSegment.tf.ConfigProto(
        device_count={'CPU': brainSegment.nCores},
        intra_op_parallelism_threads=brainSegment.nCores*2,
        inter_op_parallelism_threads=brainSegment.nCores*2*2,
        use_per_session_threads=True)
-   mySession = BrainSegment.tf.Session(config=config)   #print("Start Tensorflow Neural Network at:", time.strftime("%Y-%m-%d %H:%M:%S %Z", time.localtime(time.time())))
+   mySession = BrainSegment.tf.Session(config=config)
+   #print("Start Tensorflow Neural Network at:", time.strftime("%Y-%m-%d %H:%M:%S %Z", time.localtime(time.time())))
    startTime = time.perf_counter()
 
    brainSegment.constructGraph()
