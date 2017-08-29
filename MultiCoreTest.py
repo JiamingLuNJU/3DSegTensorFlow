@@ -33,5 +33,6 @@ def main():
    #print("End Tensorflow Neural Network at:", time.strftime("%Y-%m-%d %H:%M:%S %Z", time.localtime(time.time())))
 
 if __name__ == "__main__":
+   print("\n\n\nMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM\n")
    print("====This is multi cores performance test====")
    main()
