@@ -1,6 +1,6 @@
 #!/bin/sh
 # Python3 Segmentation Script runned in Argon
-#$ -cwd -N SegBrain  -e ~/temp/segError.txt -o ~/temp/segStdOutput.txt -M sheenxh@gmail.com  -m ea
+#$ -cwd -N SegBrain  -e ~/temp/segError.txt -o ~/temp/segStdOutput.txt -M sheenxh@gmail.com  -m ea -l mf=1000G
 python3 ~/Projects/3DSegTensorFlow/testBrainSegmentation.py ~/temp/T1T2LabelCubic.csv 10 120,80,40,26 0.002
 
 
