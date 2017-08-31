@@ -16,6 +16,8 @@ def main():
    print("socket.information")
    print(socket.os.environ)
 
+   return
+
    print ("\n$$$$   Current use core: ",brainSegment.nCores, "$$$$")
    config = BrainSegment.tf.ConfigProto(
        device_count={'CPU': brainSegment.nCores},
