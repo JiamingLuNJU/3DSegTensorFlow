@@ -3,6 +3,7 @@
 import BrainSegment
 import sys
 import time
+import socket
 
 def main():
    print ("$$$$$$$$$$$ MultiCore Performance test**********")
@@ -11,6 +12,9 @@ def main():
        return
    brainSegment.readFile()
    brainSegment.splitTrainTestData()
+
+   print("socket.information")
+   print(socket.os.environ)
 
    print ("\n$$$$   Current use core: ",brainSegment.nCores, "$$$$")
    config = BrainSegment.tf.ConfigProto(
