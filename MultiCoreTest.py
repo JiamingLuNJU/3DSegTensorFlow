@@ -16,6 +16,7 @@ def main():
    print ("\n$$$$   Current use core: ",brainSegment.nCores, "$$$$")
    config = BrainSegment.tf.ConfigProto(
        device_count={'CPU': 1}, # device_count limits the number of CPUs being used, not the number of cores or threads.
+                                # By default all CPUs available to the process are aggregated under cpu:0 device.
        intra_op_parallelism_threads=brainSegment.nCores,
        inter_op_parallelism_threads=brainSegment.nCores,
        use_per_session_threads=True)
