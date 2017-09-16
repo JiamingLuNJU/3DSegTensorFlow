@@ -72,9 +72,22 @@ pathon3 lib: /opt/intel/intelpython3/lib
 bazel compile:(has compile error in fopenmp)
 bazel build --config=mkl --copt=”-DEIGEN_USE_VML” -c opt //tensorflow/tools/pip_package:build_pip_package
 
+
+
 Generate pip3 wheel:
 bazel-bin/tensorflow/tools/pip_package/build_pip_package ~/path_to_save_wheel
 pip install --upgrade --user ~/path_to_save_wheel/wheel_name.whl
+
+Add "--config=mkl" to your bazel command to build with MKL support.
+Please note that MKL on MacOS or windows is still not supported.
+If you would like to use a local MKL instead of downloading, please set the environment variable "TF_MKL_ROOT" every time before build.
+in tcshell fille ~/.cshrc, add below line:
+set TF_MKL_ROOT=/opt/intel/intelpython3/bin/tensorflow/third_party/mkl
+
+conda install -c intel tensorflow
+
+for intel CPU performace  test:
+ ~/miniconda3/bin/python3.6 ~/Projects/3DSegTensorFlow/Segment3D.py T1T2LabelCubicNormalize.csv 10 280,240,200,160,120,80,40,26 0.002
 
 ************************************************************
 ************************************************************
