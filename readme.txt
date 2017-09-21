@@ -65,15 +65,12 @@ sudo -H pip3 install ~/temp/tensorflow_pkg/tensorflow-1.3.0rc1-cp36-cp36m-macosx
 
 for IntelPython3.5
 ======================================
-python3 at: /opt/intel/intelpython3/bin/python3.5
+python3 at: ~/miniconda3/bin/python3.6
 
 pathon3 lib: /opt/intel/intelpython3/lib
 
 bazel compile:(has compile error in fopenmp)
 bazel build --config=mkl --copt=”-DEIGEN_USE_VML” -c opt //tensorflow/tools/pip_package:build_pip_package
-
-
-
 Generate pip3 wheel:
 bazel-bin/tensorflow/tools/pip_package/build_pip_package ~/path_to_save_wheel
 pip install --upgrade --user ~/path_to_save_wheel/wheel_name.whl
@@ -83,6 +80,8 @@ Please note that MKL on MacOS or windows is still not supported.
 If you would like to use a local MKL instead of downloading, please set the environment variable "TF_MKL_ROOT" every time before build.
 in tcshell fille ~/.cshrc, add below line:
 set TF_MKL_ROOT=/opt/intel/intelpython3/bin/tensorflow/third_party/mkl
+
+install intel tensorflow from conda.
 
 conda install -c intel tensorflow
 

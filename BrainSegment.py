@@ -2,6 +2,7 @@ import tensorflow as tf
 import numpy as np
 import random
 import time
+import threading
 
 class BrainSegment:
     labelWidth = 26  # Groundtruth label is from 0 to 25
@@ -10,6 +11,8 @@ class BrainSegment:
     def __init__(self):
         # null content
         self.testSeed = False
+        self.nMaxTrainThread = 0
+        self.nMaxTestThread = 0;
 
     def printUsage(self):
         usageInfo = "Usage:\n" \
@@ -143,10 +146,17 @@ class BrainSegment:
                 batchX = self.trainData[j:j + self.batchSize]
                 batchY = self.trainLabel[j:j + self.batchSize]
                 mySession.run(train_step, feed_dict={self.x: batchX, self.y_: batchY})
+                nThread = threading.active_count()
+                if nThread > self.nMaxTrainThread:
+                    self.nMaxTrainThread = nThread
 
             correct_prediction = tf.equal(tf.argmax(self.outLayer, 1), tf.argmax(self.y_, 1))
             accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32), 0)
             correctRate = mySession.run(accuracy, feed_dict={self.x: self.testData, self.y_: self.testLabel})
+            nThread = threading.active_count()
+            if nThread > self.nMaxTestThread:
+                self.nMaxTestThread = nThread
+
             print(i, ",", self.layerListStr, ",", self.batchSize, ",", self.learningRate, ",", self.nTest, ",", correctRate)
 
         if correctRate >= 0.92:
