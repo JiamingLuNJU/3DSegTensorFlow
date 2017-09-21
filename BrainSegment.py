@@ -146,16 +146,16 @@ class BrainSegment:
                 batchX = self.trainData[j:j + self.batchSize]
                 batchY = self.trainLabel[j:j + self.batchSize]
                 mySession.run(train_step, feed_dict={self.x: batchX, self.y_: batchY})
-                nThread = threading.active_count()
-                if nThread > self.nMaxTrainThread:
-                    self.nMaxTrainThread = nThread
+                # nThread = threading.active_count()
+                # if nThread > self.nMaxTrainThread:
+                #     self.nMaxTrainThread = nThread
 
             correct_prediction = tf.equal(tf.argmax(self.outLayer, 1), tf.argmax(self.y_, 1))
             accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32), 0)
             correctRate = mySession.run(accuracy, feed_dict={self.x: self.testData, self.y_: self.testLabel})
-            nThread = threading.active_count()
-            if nThread > self.nMaxTestThread:
-                self.nMaxTestThread = nThread
+            # nThread = threading.active_count()
+            # if nThread > self.nMaxTestThread:
+            #     self.nMaxTestThread = nThread
 
             print(i, ",", self.layerListStr, ",", self.batchSize, ",", self.learningRate, ",", self.nTest, ",", correctRate)
 

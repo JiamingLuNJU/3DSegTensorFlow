@@ -34,8 +34,8 @@ def main():
    diffTime = time.perf_counter() - startTime
    #print("==========End of Tensorflow Neural Network=============")
    print("Computation time: ", diffTime, "seconds.")
-   print("Maximum train thread number: ", brainSegment.nMaxTrainThread);
-   print("Maximum test thread number: ", brainSegment.nMaxTestThread);
+   # print("Maximum train thread number: ", brainSegment.nMaxTrainThread);
+   # print("Maximum test thread number: ", brainSegment.nMaxTestThread);
    #print("End Tensorflow Neural Network at:", time.strftime("%Y-%m-%d %H:%M:%S %Z", time.localtime(time.time())))
 
 if __name__ == "__main__":
