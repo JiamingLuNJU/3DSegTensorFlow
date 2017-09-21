@@ -47,6 +47,9 @@ Configuration finished
 
 Bazel compile:
 bazel build --config=opt //tensorflow/tools/pip_package:build_pip_package
+or
+bazel build --config=opt --config=mkl //tensorflow/tools/pip_package:build_pip_package
+
 
 ==============================================================
 Generate pip3 wheel:
