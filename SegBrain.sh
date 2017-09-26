@@ -1,6 +1,5 @@
 #!/bin/bash
-# Python3 Segmentation Script runned in Argon
-# python3 ~/Projects/3DSegTensorFlow/testBrainSegmentation.py ~/temp/T1T2LabelCubicNormalize.csv 10 120,80,40,26 0.002
+# Python3 Segmentation Script run in Argon
 for i in $(seq 56)
 do
   if (($i == 1 || $i %4 ==0))
