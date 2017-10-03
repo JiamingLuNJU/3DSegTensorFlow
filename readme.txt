@@ -51,7 +51,7 @@ or
 bazel build --config=opt --config=mkl //tensorflow/tools/pip_package:build_pip_package
 
 # build tensor flow for Argon HPC successfully
-bazel build --config=mkl --copt="-DEIGEN_USE_VML" -c opt //tensorflow/tools/pip_package:build_pip_package
+bazel build --config=mkl --config=opt --copt="-DEIGEN_USE_VML" -c opt //tensorflow/tools/pip_package:build_pip_package
 
 
 ==============================================================
