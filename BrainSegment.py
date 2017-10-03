@@ -50,7 +50,7 @@ class BrainSegment:
         self.hiddenLayerList = [int(elem) for elem in argv[3].split(',')]
         self.learningRate = float(argv[4])
         self.inputLearningRate = self.learningRate
-        self.nCores = 10
+        self.nCores = 0  # if they are unset or set to 0, will default to the number of logical CPU cores.
         if 6 == argc:
            self.nCores = int(argv[5])
         return True
