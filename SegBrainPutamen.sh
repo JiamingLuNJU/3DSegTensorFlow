@@ -7,7 +7,7 @@ do
   then
      echo $i
      echo "%%%%%%%%%%%%%%%%%%%%%%%% Start Segment in $i cores %%%%%%%%%%%%%%%%%%%%%"
-     python3 ~/Projects/3DSegTensorFlow/MultiCoreTest.py ~/temp/T1T2LabelCubicNormalize.csv 10 240,200,160,120,80,40,26 0.002 $i
+     python3 ~/Projects/3DSegTensorFlow/MultiCoreTest.py ~/temp/T1T2LabelCubicNormalize.csv 20 240,200,160,120,80,40,26 0.002 $i
      echo "%%%%%%%%%%%%%%%%%%%%%%%% End Segment in $i cores %%%%%%%%%%%%%%%%%%%%%"
   fi
 done
